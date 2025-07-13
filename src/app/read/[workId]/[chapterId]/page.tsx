@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getWork, getAuthor, getChapter, getChapters } from '@/utils/content';
+import VerticalReader from '@/components/reader/VerticalReader';
 
 export function generateStaticParams() {
   const chapters = getChapters();
@@ -29,101 +30,126 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
   const nextChapter = currentIndex < work.chapters.length - 1 ? work.chapters[currentIndex + 1] : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
+    <div className="h-screen flex flex-col bg-amber-100">
       <div className="grain-overlay" />
       
-      <header className="sticky top-0 z-50 bg-black/90 backdrop-blur-sm border-b border-gray-700">
+      <header className="sticky top-0 z-50 bg-amber-50/95 backdrop-blur-sm border-b border-amber-200 shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link 
                 href={`/works/${workId}`}
-                className="text-red-400 hover:text-red-300 transition-colors text-sm"
+                className="text-amber-700 hover:text-amber-600 transition-colors text-sm font-medium"
               >
                 ← 作品に戻る
               </Link>
-              <div className="text-gray-400 text-sm">
+              <div className="text-amber-600 text-sm">
                 {work.title} / {chapter.title}
               </div>
             </div>
             
-            <div className="flex items-center space-x-4 text-sm text-gray-400">
+            <div className="flex items-center space-x-4 text-sm text-amber-600">
               <span>{currentIndex + 1} / {work.chapters.length}</span>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <article className="reader-content">
-          <header className="mb-8 text-center border-b border-gray-600 pb-6">
-            <h1 className="text-3xl font-serif text-gray-200 mb-2">
+      <main className="flex-1 overflow-hidden relative">
+        <VerticalReader 
+          workId={workId} 
+          chapterId={chapterId} 
+          prevChapter={prevChapter} 
+          nextChapter={nextChapter}
+        >
+          {/* 草紙風背景 */}
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-yellow-50 to-amber-100" />
+          <div className="absolute inset-0 paper-texture" />
+          <div className="absolute inset-0 paper-shadow" />
+        
+        <article className="relative h-full overflow-auto">
+          {/* 章タイトルエリア（右上） */}
+          <div className="absolute top-8 right-8 text-right z-10">
+            <h1 className="text-2xl font-serif text-amber-900 mb-2 vertical-text">
               {chapter.title}
             </h1>
-            <div className="text-gray-400 text-sm">
-              <span>{author.name}</span>
-              {author.pseudonym && <span className="ml-2">（{author.pseudonym}）</span>}
+            <div className="text-amber-700 text-sm vertical-text">
+              <div>{author.name}</div>
+              {author.pseudonym && <div className="mt-1">（{author.pseudonym}）</div>}
             </div>
-            <div className="text-gray-500 text-xs mt-2">
-              {chapter.publishedAt.toLocaleDateString('ja-JP')} 発表 | {chapter.characterCount.toLocaleString()}文字
-            </div>
-          </header>
+          </div>
 
-          <div className="prose-dark max-w-none">
-            {chapter.content.split('\n\n').map((paragraph, index) => (
-              <p key={index} className="mb-6 text-lg leading-relaxed">
-                {paragraph}
-              </p>
-            ))}
+          {/* 縦書きコンテンツエリア */}
+          <div className="vertical-reader h-full pt-16 pr-24 pl-8 pb-8">
+            <div className="vertical-text text-xl leading-relaxed text-amber-900 h-full font-serif">
+              {chapter.content.split('\n\n').map((paragraph, index) => (
+                <div key={index} className="vertical-paragraph">
+                  {paragraph.split('').map((char, charIndex) => {
+                    // 数字の処理
+                    if (/\d/.test(char)) {
+                      return <span key={charIndex} className="number">{char}</span>;
+                    }
+                    // 句読点の処理
+                    if (/[。、！？]/.test(char)) {
+                      return <span key={charIndex} className="punctuation">{char}</span>;
+                    }
+                    return char;
+                  })}
+                </div>
+              ))}
+            </div>
           </div>
         </article>
 
-        <nav className="mt-12 pt-8 border-t border-gray-600">
-          <div className="flex justify-between items-center">
-            <div>
-              {prevChapter ? (
-                <Link
-                  href={`/read/${workId}/${prevChapter.id}`}
-                  className="inline-flex items-center px-4 py-2 bg-gray-800 border border-gray-600 rounded hover:border-red-400/50 transition-colors text-gray-200"
-                >
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  前の章
-                </Link>
-              ) : (
-                <div className="px-4 py-2 text-gray-500">
-                  最初の章です
-                </div>
-              )}
-            </div>
-
+        {/* ナビゲーションボタン（左側固定） */}
+        <nav className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 flex flex-col space-y-4">
+          {prevChapter ? (
             <Link
-              href={`/works/${workId}`}
-              className="px-4 py-2 bg-red-900/30 border border-red-700 rounded hover:bg-red-900/50 transition-colors text-red-300"
+              href={`/read/${workId}/${prevChapter.id}`}
+              className="vertical-nav-button group"
+              title="前の章"
             >
-              目次に戻る
+              <svg className="w-5 h-5 text-amber-700 group-hover:text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+              </svg>
             </Link>
-
-            <div>
-              {nextChapter ? (
-                <Link
-                  href={`/read/${workId}/${nextChapter.id}`}
-                  className="inline-flex items-center px-4 py-2 bg-gray-800 border border-gray-600 rounded hover:border-red-400/50 transition-colors text-gray-200"
-                >
-                  次の章
-                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              ) : (
-                <div className="px-4 py-2 text-gray-500">
-                  最後の章です
-                </div>
-              )}
+          ) : (
+            <div className="vertical-nav-button opacity-30">
+              <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+              </svg>
             </div>
-          </div>
+          )}
+
+          <Link
+            href={`/works/${workId}`}
+            className="vertical-nav-button group"
+            title="目次に戻る"
+          >
+            <svg className="w-5 h-5 text-amber-700 group-hover:text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </Link>
+
+          {nextChapter ? (
+            <Link
+              href={`/read/${workId}/${nextChapter.id}`}
+              className="vertical-nav-button group"
+              title="次の章"
+            >
+              <svg className="w-5 h-5 text-amber-700 group-hover:text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          ) : (
+            <div className="vertical-nav-button opacity-30">
+              <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </div>
+          )}
         </nav>
+        </VerticalReader>
       </main>
 
     </div>

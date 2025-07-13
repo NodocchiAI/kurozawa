@@ -95,3 +95,73 @@ body {
   border-radius: 8px;
   box-shadow: 0 4px 20px var(--shadow-dark);
 }
+
+/* 縦書きリーダー専用スタイル */
+.vertical-reader {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  direction: rtl;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.vertical-reader::-webkit-scrollbar {
+  display: none;
+}
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-feature-settings: "vkrn" 1, "vpal" 1;
+  line-height: 2.2;
+  letter-spacing: 0.1em;
+  text-align: justify;
+}
+
+.vertical-paragraph {
+  margin-right: 2.5em;
+  min-height: 100%;
+  display: inline-block;
+  vertical-align: top;
+}
+
+/* 草紙風ナビゲーションボタン */
+.vertical-nav-button {
+  @apply w-10 h-10 bg-amber-50/80 hover:bg-amber-100/90 border border-amber-200 rounded-full;
+  @apply flex items-center justify-center transition-all duration-200;
+  @apply shadow-sm hover:shadow-md backdrop-blur-sm;
+}
+
+/* 草紙風テクスチャ */
+.paper-texture {
+  background-image: 
+    radial-gradient(circle at 1px 1px, rgba(139,69,19,0.1) 1px, transparent 0),
+    linear-gradient(45deg, rgba(222,184,135,0.1) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(222,184,135,0.1) 25%, transparent 25%);
+  background-size: 20px 20px, 40px 40px, 40px 40px;
+}
+
+/* 文字の縦書き最適化 */
+.vertical-text .punctuation {
+  text-combine-upright: all;
+}
+
+.vertical-text .number {
+  text-combine-upright: digits 2;
+}
+
+/* ページめくりアニメーション */
+.page-transition {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 草紙風影効果 */
+.paper-shadow {
+  box-shadow: 
+    0 2px 4px rgba(139,69,19,0.1),
+    0 8px 16px rgba(139,69,19,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+}

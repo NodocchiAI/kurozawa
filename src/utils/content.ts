@@ -5,6 +5,34 @@ import { Author, Work, Chapter } from '@/types';
 
 const contentDirectory = path.join(process.cwd(), 'content');
 
+// マークダウンコンテンツから章を抽出する関数
+function extractChaptersFromContent(workId: string, content: string): Chapter[] {
+  const sections = content.split(/^## /m).filter(section => section.trim());
+  const chapters: Chapter[] = [];
+  
+  sections.forEach((section, index) => {
+    const lines = section.trim().split('\n');
+    const title = lines[0].replace(/^##\s*/, '').trim();
+    
+    // 章のタイトルが「第X章」形式の場合のみ処理
+    if (title.match(/第[一二三四五六七八九十\d]+章/)) {
+      const chapterContent = lines.slice(1).join('\n').trim();
+      
+      chapters.push({
+        id: `${workId}-${String(index + 1).padStart(2, '0')}`,
+        workId,
+        title,
+        content: chapterContent,
+        chapterNumber: index + 1,
+        publishedAt: new Date('1923-10-15'), // デフォルト日付
+        characterCount: chapterContent.length,
+      });
+    }
+  });
+  
+  return chapters;
+}
+
 export function getAuthors(): Author[] {
   const authorsDirectory = path.join(contentDirectory, 'authors');
   
@@ -56,7 +84,8 @@ export function getWorks(): Work[] {
       const fileContents = fs.readFileSync(filePath, 'utf8');
       const { data, content } = matter(fileContents);
       
-      const chapters = getChaptersByWorkId(data.id);
+      // 新しい構造: マークダウンファイルから直接章を抽出
+      const chapters = extractChaptersFromContent(data.id, content);
       const totalCharacterCount = chapters.reduce((sum, chapter) => sum + chapter.characterCount, 0);
       
       return {
@@ -64,7 +93,7 @@ export function getWorks(): Work[] {
         title: data.title,
         authorId: data.authorId,
         publishedYear: data.publishedYear,
-        description: content.trim(),
+        description: data.description || content.split('\n\n')[0], // descriptionまたは最初の段落
         genre: data.genre || [],
         chapters,
         status: data.status || 'completed',

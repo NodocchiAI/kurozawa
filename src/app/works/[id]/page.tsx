@@ -84,29 +84,43 @@ export default async function WorkPage({ params }: WorkPageProps) {
             </header>
 
             <section>
-              <h2 className="text-2xl font-serif text-gray-200 mb-6">目次</h2>
-              <div className="space-y-3">
-                {work.chapters.map((chapter) => (
-                  <Link
-                    key={chapter.id}
-                    href={`/read/${work.id}/${chapter.id}`}
-                    className="block p-4 bg-gray-800/40 border border-gray-600 rounded hover:border-red-400/50 hover:bg-gray-700/40 transition-colors"
-                  >
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="text-gray-200 hover:text-red-300 transition-colors font-medium">
-                          {chapter.title}
-                        </div>
-                        <p className="text-sm text-gray-400 mt-1">
-                          {chapter.characterCount.toLocaleString()}文字
-                        </p>
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {chapter.publishedAt.toLocaleDateString('ja-JP')}
-                      </div>
+              <h2 className="text-2xl font-serif text-gray-200 mb-6">作品を読む</h2>
+              <div className="space-y-4">
+                <Link
+                  href={`/read/${work.id}`}
+                  className="block p-6 bg-gray-800/40 border border-gray-600 rounded hover:border-red-400/50 hover:bg-gray-700/40 transition-colors"
+                >
+                  <div className="text-center">
+                    <div className="text-xl text-gray-200 hover:text-red-300 transition-colors font-medium mb-2">
+                      📖 作品を読む
                     </div>
-                  </Link>
-                ))}
+                    <p className="text-sm text-gray-400">
+                      全{work.chapters.length}章 • {work.totalCharacterCount.toLocaleString()}文字
+                    </p>
+                  </div>
+                </Link>
+                
+                <div className="mt-6">
+                  <h3 className="text-lg font-serif text-gray-300 mb-3">章構成</h3>
+                  <div className="space-y-2">
+                    {work.chapters.map((chapter, index) => (
+                      <div
+                        key={chapter.id}
+                        className="p-3 bg-gray-800/20 border border-gray-700/50 rounded text-sm"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <span className="text-gray-400">第{index + 1}章:</span>
+                            <span className="text-gray-300 ml-2">{chapter.title}</span>
+                          </div>
+                          <span className="text-gray-500 text-xs">
+                            {chapter.characterCount.toLocaleString()}文字
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </section>
 

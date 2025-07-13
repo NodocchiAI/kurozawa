@@ -36,39 +36,72 @@ export function calculateOptimalColumnWidth(
   return Math.min(optimalWidth, maxColumnWidth);
 }
 
-// 文字数ベースの動的分割（Easoshi風）
+// えあ草紙風の精密な文字ベース分割
 export function calculateOptimalSplit(
   paragraphs: string[],
   fontSize: number,
   containerWidth: number,
-  containerHeight: number,
-  fontFamily: string = 'Noto Serif JP'
-): { firstHalf: string[], secondHalf: string[] } {
+  containerHeight: number
+): { firstHalf: string[], secondHalf: string[], processedCount: number } {
   const lineHeight = fontSize * 1.6;
-  const maxLinesPerColumn = Math.floor((containerHeight - fontSize * 3) / lineHeight);
+  const maxLinesPerColumn = Math.floor((containerHeight - fontSize * 4) / lineHeight); // より厳密なマージン
+  const columnWidth = (containerWidth - fontSize * 2) / 2; // カラム間のスペースを考慮
+  const charactersPerLine = Math.floor(columnWidth / (fontSize * 0.6)); // 1文字あたりの幅を調整
   
+  const firstColumnContent: string[] = [];
+  const secondColumnContent: string[] = [];
   let firstColumnLines = 0;
-  let splitIndex = 0;
+  let secondColumnLines = 0;
+  let processedParagraphs = 0;
   
+  // 段落を文字単位で処理
   for (let i = 0; i < paragraphs.length; i++) {
     const paragraph = paragraphs[i];
-    const paragraphWidth = measureTextWidth(paragraph, fontSize, fontFamily);
-    const columnWidth = (containerWidth - fontSize) / 2;
+    const paragraphLines = Math.ceil(paragraph.length / charactersPerLine);
     
-    // 段落が何行になるかを計算
-    const linesInParagraph = Math.ceil(paragraphWidth / columnWidth) + 1; // +1 for margin
-    
-    if (firstColumnLines + linesInParagraph > maxLinesPerColumn) {
+    // 第1カラムに収まるかチェック
+    if (firstColumnLines + paragraphLines <= maxLinesPerColumn) {
+      firstColumnContent.push(paragraph);
+      firstColumnLines += paragraphLines + 1; // 段落間スペース
+      processedParagraphs = i + 1;
+    } 
+    // 第2カラムに収まるかチェック
+    else if (secondColumnLines + paragraphLines <= maxLinesPerColumn) {
+      secondColumnContent.push(paragraph);
+      secondColumnLines += paragraphLines + 1;
+      processedParagraphs = i + 1;
+    }
+    // どちらにも収まらない場合は、段落を分割
+    else if (firstColumnContent.length === 0 && secondColumnContent.length === 0) {
+      // 長い段落を強制的に分割
+      const availableLines = maxLinesPerColumn;
+      const maxChars = availableLines * charactersPerLine;
+      if (paragraph.length > maxChars) {
+        firstColumnContent.push(paragraph.substring(0, maxChars));
+        processedParagraphs = i; // 部分的に処理
+        break;
+      } else {
+        firstColumnContent.push(paragraph);
+        processedParagraphs = i + 1;
+      }
       break;
     }
-    
-    firstColumnLines += linesInParagraph;
-    splitIndex = i + 1;
+    // これ以上入らない場合は終了
+    else {
+      break;
+    }
+  }
+  
+  // 最低1段落は処理するように保証
+  if (processedParagraphs === 0 && paragraphs.length > 0) {
+    firstColumnContent.push(paragraphs[0]);
+    processedParagraphs = 1;
   }
   
   return {
-    firstHalf: paragraphs.slice(0, splitIndex),
-    secondHalf: paragraphs.slice(splitIndex)
+    firstHalf: firstColumnContent,
+    secondHalf: secondColumnContent,
+    processedCount: processedParagraphs
   };
 }
 

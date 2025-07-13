@@ -96,60 +96,74 @@ body {
   box-shadow: 0 4px 20px var(--shadow-dark);
 }
 
-/* 縦書きリーダー専用スタイル */
-.vertical-reader {
+/* 縦書きリーダー専用スタイル - ダークモード */
+.reader-main {
   writing-mode: vertical-rl;
-  text-orientation: upright;
+  text-orientation: mixed;
   direction: rtl;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  padding: 3rem 2rem;
+  background: #000;
 }
 
-.vertical-reader::-webkit-scrollbar {
+.reader-main::-webkit-scrollbar {
   display: none;
+}
+
+.reader-content-wrapper {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  direction: ltr;
+}
+
+.reader-column {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  direction: rtl;
+  min-height: 100%;
+  margin-right: 3rem;
+  flex-shrink: 0;
+  width: auto;
+}
+
+.reader-text {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 1.125rem;
+  line-height: 2.2;
+  letter-spacing: 0.05em;
+  color: #e5e7eb;
+  text-align: justify;
+  font-weight: 400;
+  height: 100%;
+  min-height: calc(100vh - 8rem);
+  padding: 0;
+  margin: 0;
 }
 
 .vertical-text {
   writing-mode: vertical-rl;
-  text-orientation: upright;
+  text-orientation: mixed;
   font-feature-settings: "vkrn" 1, "vpal" 1;
-  line-height: 2.2;
-  letter-spacing: 0.1em;
-  text-align: justify;
 }
 
-.vertical-paragraph {
-  margin-right: 2.5em;
-  min-height: 100%;
-  display: inline-block;
-  vertical-align: top;
-}
-
-/* 草紙風ナビゲーションボタン */
-.vertical-nav-button {
-  @apply w-10 h-10 bg-amber-50/80 hover:bg-amber-100/90 border border-amber-200 rounded-full;
+/* ダークモードナビゲーションボタン */
+.nav-button {
+  @apply w-8 h-8 bg-gray-800/80 hover:bg-gray-700/90 border border-gray-600 rounded-full;
   @apply flex items-center justify-center transition-all duration-200;
   @apply shadow-sm hover:shadow-md backdrop-blur-sm;
 }
 
-/* 草紙風テクスチャ */
-.paper-texture {
-  background-image: 
-    radial-gradient(circle at 1px 1px, rgba(139,69,19,0.1) 1px, transparent 0),
-    linear-gradient(45deg, rgba(222,184,135,0.1) 25%, transparent 25%),
-    linear-gradient(-45deg, rgba(222,184,135,0.1) 25%, transparent 25%);
-  background-size: 20px 20px, 40px 40px, 40px 40px;
-}
-
 /* 文字の縦書き最適化 */
-.vertical-text .punctuation {
+.reader-text .punctuation {
   text-combine-upright: all;
 }
 
-.vertical-text .number {
+.reader-text .number {
   text-combine-upright: digits 2;
 }
 
@@ -158,10 +172,18 @@ body {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 草紙風影効果 */
-.paper-shadow {
-  box-shadow: 
-    0 2px 4px rgba(139,69,19,0.1),
-    0 8px 16px rgba(139,69,19,0.05),
-    inset 0 1px 0 rgba(255,255,255,0.3);
+/* レスポンシブ調整 */
+@media (max-width: 768px) {
+  .reader-main {
+    padding: 2rem 1rem;
+  }
+  
+  .reader-column {
+    margin-right: 2rem;
+  }
+  
+  .reader-text {
+    font-size: 1rem;
+    line-height: 2;
+  }
 }

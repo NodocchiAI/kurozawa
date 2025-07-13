@@ -79,13 +79,11 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
           {/* 縦書きコンテンツエリア */}
           <div className="reader-main h-full">
             <div className="reader-content-wrapper">
-              {chapter.content.split('\n\n').map((paragraph, index) => (
-                <div key={index} className="reader-column">
-                  <div className="reader-text">
-                    {paragraph}
-                  </div>
+              <div className="reader-column">
+                <div className="reader-text">
+                  {chapter.content}
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </article>

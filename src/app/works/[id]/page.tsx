@@ -87,25 +87,25 @@ export default async function WorkPage({ params }: WorkPageProps) {
               <h2 className="text-2xl font-serif text-gray-200 mb-6">目次</h2>
               <div className="space-y-3">
                 {work.chapters.map((chapter) => (
-                  <div
+                  <Link
                     key={chapter.id}
-                    className="flex justify-between items-center p-4 bg-gray-800/40 border border-gray-600 rounded hover:border-red-400/50 transition-colors"
+                    href={`/read/${work.id}/${chapter.id}`}
+                    className="block p-4 bg-gray-800/40 border border-gray-600 rounded hover:border-red-400/50 hover:bg-gray-700/40 transition-colors"
                   >
-                    <div>
-                      <Link 
-                        href={`/read/${work.id}/${chapter.id}`}
-                        className="text-gray-200 hover:text-red-300 transition-colors font-medium"
-                      >
-                        {chapter.title}
-                      </Link>
-                      <p className="text-sm text-gray-400 mt-1">
-                        {chapter.characterCount.toLocaleString()}文字
-                      </p>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="text-gray-200 hover:text-red-300 transition-colors font-medium">
+                          {chapter.title}
+                        </div>
+                        <p className="text-sm text-gray-400 mt-1">
+                          {chapter.characterCount.toLocaleString()}文字
+                        </p>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {chapter.publishedAt.toLocaleDateString('ja-JP')}
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500">
-                      {chapter.publishedAt.toLocaleDateString('ja-JP')}
-                    </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </section>

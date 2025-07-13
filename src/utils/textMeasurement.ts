@@ -79,7 +79,6 @@ export function calculateOptimalFontSize(
   containerHeight: number,
   baseFontSize: number = 16
 ): number {
-  const lines = content.split('\n');
   const maxLines = Math.floor(containerHeight / (baseFontSize * 1.6));
   const avgCharsPerLine = (containerWidth / 2) / (baseFontSize * 0.6);
   

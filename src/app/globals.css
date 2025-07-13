@@ -182,12 +182,12 @@ body {
 
 .reader-text {
   font-family: 'Noto Serif JP', serif;
-  font-size: 1.1rem !important;
-  line-height: 1.9 !important;
+  font-size: 0.95rem !important;
+  line-height: 1.6 !important;
   letter-spacing: 0 !important;
   color: #f3f4f6;
   font-weight: 400;
-  padding: 2.5rem 2rem;
+  padding: 1.5rem 1.5rem;
   text-align: left;
   /* えあ草紙スタイルのフォントレンダリング */
   text-rendering: optimizeLegibility !important;
@@ -213,7 +213,7 @@ body {
 }
 
 .reader-paragraph {
-  margin: 0 1.2em 0 0; /* 縦書きでは右マージンで段落間隔を制御 */
+  margin: 0 0.8em 0 0; /* 縦書きでは右マージンで段落間隔を制御 */
   padding: 0;
   line-height: inherit;
   letter-spacing: 0 !important;

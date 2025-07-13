@@ -175,9 +175,11 @@ body {
 }
 
 .reader-paragraph {
-  margin: 0 0 1.5em 0; /* 段落間隔を制御 */
+  margin: 0 0 1.2em 0; /* 段落間隔を制御 */
   padding: 0;
   line-height: inherit;
+  letter-spacing: 0 !important;
+  word-spacing: 0 !important;
 }
 
 .vertical-text {
@@ -216,11 +218,15 @@ body {
 .ruby {
   ruby-position: inter-character;
   ruby-align: center;
+  display: inline;
   position: relative;
+  margin: 0;
+  padding: 0;
+  letter-spacing: 0 !important; /* 文字間隔をリセット */
 }
 
 .ruby rt {
-  font-size: 0.5em;
+  font-size: 0.45em;
   color: #d1d5db;
   font-weight: 300;
   text-orientation: upright;
@@ -228,15 +234,24 @@ body {
   line-height: 1;
   margin: 0;
   padding: 0;
-  position: relative;
-  left: -0.5em; /* 縦書きでの位置調整 */
+  position: absolute;
+  left: -0.8em; /* 位置調整 */
+  top: 0;
+  width: 0.8em;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0 !important;
 }
 
 /* 縦書きリーダー内でのルビ調整 */
 .reader-text .ruby {
   ruby-position: inter-character;
-  display: inline-block;
+  display: inline;
   position: relative;
+  margin: 0;
+  padding: 0;
+  letter-spacing: 0 !important;
+  word-spacing: 0 !important;
 }
 
 .reader-text .ruby rt {
@@ -247,10 +262,12 @@ body {
   writing-mode: vertical-rl;
   text-orientation: upright;
   position: absolute;
-  left: -1.2em;
+  left: -0.7em; /* より近い位置に調整 */
   top: 0;
-  width: 1em;
+  width: 0.6em;
   text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0 !important;
 }
 
 /* レスポンシブ調整 */

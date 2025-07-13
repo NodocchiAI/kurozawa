@@ -81,11 +81,16 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
           <div className="reader-main">
             <div className="reader-content-wrapper">
               {(() => {
-                // 段落を適切に分割（空行を除去）
-                const paragraphs = chapter.content
+                // テキストを適切に処理
+                const cleanContent = chapter.content
+                  .replace(/^#.*$/gm, '') // 見出しを除去
+                  .trim();
+                
+                // 段落を適切に分割
+                const paragraphs = cleanContent
                   .split('\n\n')
                   .filter(p => p.trim().length > 0)
-                  .map(p => p.replace(/\n/g, ''));
+                  .map(p => p.replace(/\n/g, ' ').trim()); // 改行をスペースに変換
                 
                 const midPoint = Math.ceil(paragraphs.length / 2);
                 const firstHalf = paragraphs.slice(0, midPoint);

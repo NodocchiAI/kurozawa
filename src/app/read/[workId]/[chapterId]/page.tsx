@@ -92,9 +92,9 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
                   .filter(p => p.trim().length > 0)
                   .map(p => p.replace(/\n/g, '').trim()); // 改行を除去
                 
-                // 文字数ベースで分割（えあ草紙風）
+                // 文字数ベースで分割（右側を多めに）
                 const totalChars = paragraphs.reduce((sum, p) => sum + p.length, 0);
-                const targetChars = Math.floor(totalChars / 2);
+                const targetChars = Math.floor(totalChars * 0.6); // 右側に60%配分
                 
                 let currentChars = 0;
                 let splitIndex = 0;

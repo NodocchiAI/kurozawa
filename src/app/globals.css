@@ -206,6 +206,10 @@ body {
   /* 空白の処理を改善 */
   word-spacing: 0 !important;
   tab-size: 0;
+  /* カラム幅の厳密な制御 */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .reader-paragraph {

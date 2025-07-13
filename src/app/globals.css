@@ -98,48 +98,49 @@ body {
 
 /* 縦書きリーダー専用スタイル - えあ草紙風 */
 .reader-main {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 確実に2列 */
   height: calc(100vh - 4rem);
   background: #000;
   padding: 2rem;
   gap: 3rem;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.reader-main::-webkit-scrollbar {
-  display: none;
+  overflow: hidden;
 }
 
 .reader-content-wrapper {
-  display: flex;
-  flex-direction: row-reverse; /* 右から左へ */
-  height: 100%;
-  gap: 3rem;
-  min-width: 100%;
+  display: contents; /* グリッドの子要素を直接配置 */
 }
 
 .reader-column {
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  width: calc(50% - 1.5rem); /* 2列表示 */
   height: 100%;
-  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.reader-column::-webkit-scrollbar {
+  display: none;
+}
+
+.reader-column:first-child {
+  order: 2; /* 右側に表示 */
+}
+
+.reader-column:last-child {
+  order: 1; /* 左側に表示 */
 }
 
 .reader-text {
   font-family: 'Noto Serif JP', serif;
-  font-size: 1rem;
-  line-height: 1.8;
-  letter-spacing: 0.1em;
+  font-size: 1rem !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.05em;
   color: #f3f4f6;
   font-weight: 400;
-  height: 100%;
   padding: 1rem;
-  border-left: 1px solid #333;
   text-align: justify;
   /* 句読点の禁則処理 */
   hanging-punctuation: force-end;
@@ -156,6 +157,9 @@ body {
   writing-mode: vertical-rl;
   text-orientation: mixed;
   font-feature-settings: "vkrn" 1, "vpal" 1;
+  font-size: 0.875rem !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0.05em;
 }
 
 /* ダークモードナビゲーションボタン */

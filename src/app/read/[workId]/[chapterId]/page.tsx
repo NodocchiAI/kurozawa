@@ -77,13 +77,32 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
           </div>
 
           {/* 縦書きコンテンツエリア */}
-          <div className="reader-main h-full">
+          <div className="reader-main">
             <div className="reader-content-wrapper">
-              <div className="reader-column">
-                <div className="reader-text">
-                  {chapter.content}
-                </div>
-              </div>
+              {(() => {
+                const paragraphs = chapter.content.split('\n\n');
+                const midPoint = Math.ceil(paragraphs.length / 2);
+                const firstHalf = paragraphs.slice(0, midPoint).join('\n\n');
+                const secondHalf = paragraphs.slice(midPoint).join('\n\n');
+                
+                return (
+                  <>
+                    {/* 右側コラム（最初に表示） */}
+                    <div className="reader-column">
+                      <div className="reader-text">
+                        {firstHalf}
+                      </div>
+                    </div>
+                    
+                    {/* 左側コラム */}
+                    <div className="reader-column">
+                      <div className="reader-text">
+                        {secondHalf}
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </div>
         </article>

@@ -66,8 +66,8 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
           <div className="absolute inset-0 bg-black" />
         
         <article className="relative h-full overflow-hidden">
-          {/* 章タイトルエリア（右上） */}
-          <div className="absolute top-4 right-6 text-right z-10">
+          {/* 章タイトルエリア（一時的に非表示） */}
+          <div className="absolute top-4 right-6 text-right z-10" style={{display: 'none'}}>
             <h1 className="text-lg font-serif text-gray-300 mb-1 vertical-text opacity-70">
               {chapter.title}
             </h1>

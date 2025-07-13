@@ -150,7 +150,7 @@ body {
   font-family: 'Noto Serif JP', serif;
   font-size: 1rem !important;
   line-height: 1.8 !important;
-  letter-spacing: 0 !important; /* 文字間隔をリセット */
+  letter-spacing: 0 !important;
   color: #f3f4f6;
   font-weight: 400;
   padding: 1rem;
@@ -163,7 +163,7 @@ body {
   line-break: strict;
   word-break: keep-all;
   overflow-wrap: break-word;
-  white-space: normal; /* normalに変更 */
+  white-space: pre-wrap; /* 空白を保持しつつ折り返し */
   /* 縦書き特有の調整 */
   text-combine-upright: none;
   font-feature-settings: "vkrn" 1, "vpal" 1, "vchw" 1;
@@ -175,11 +175,12 @@ body {
 }
 
 .reader-paragraph {
-  margin: 0 0 1.2em 0; /* 段落間隔を制御 */
+  margin: 0 1em 0 0; /* 縦書きでは右マージンで段落間隔を制御 */
   padding: 0;
   line-height: inherit;
   letter-spacing: 0 !important;
   word-spacing: 0 !important;
+  text-indent: 1em; /* 段落の字下げ */
 }
 
 .vertical-text {
@@ -214,38 +215,10 @@ body {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ルビ（ふりがな）スタイル - 縦書き対応 */
+/* ルビ（ふりがな）スタイル - えあ草紙風縦書き対応 */
 .ruby {
-  ruby-position: inter-character;
+  ruby-position: over;
   ruby-align: center;
-  display: inline;
-  position: relative;
-  margin: 0;
-  padding: 0;
-  letter-spacing: 0 !important; /* 文字間隔をリセット */
-}
-
-.ruby rt {
-  font-size: 0.45em;
-  color: #d1d5db;
-  font-weight: 300;
-  text-orientation: upright;
-  writing-mode: vertical-rl;
-  line-height: 1;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  left: -0.8em; /* 位置調整 */
-  top: 0;
-  width: 0.8em;
-  text-align: center;
-  white-space: nowrap;
-  letter-spacing: 0 !important;
-}
-
-/* 縦書きリーダー内でのルビ調整 */
-.reader-text .ruby {
-  ruby-position: inter-character;
   display: inline;
   position: relative;
   margin: 0;
@@ -254,20 +227,45 @@ body {
   word-spacing: 0 !important;
 }
 
+.ruby rt {
+  font-size: 0.5em;
+  color: #d1d5db;
+  font-weight: 300;
+  text-orientation: mixed;
+  writing-mode: inherit;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+  letter-spacing: 0 !important;
+  word-spacing: 0 !important;
+}
+
+/* 縦書きリーダー内でのルビ調整 - えあ草紙風 */
+.reader-text .ruby {
+  ruby-position: over;
+  ruby-align: center;
+  display: inline-ruby;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  letter-spacing: 0 !important;
+  word-spacing: 0 !important;
+  line-height: inherit;
+}
+
 .reader-text .ruby rt {
-  font-size: 0.45em;
+  font-size: 0.5em;
   line-height: 1;
   margin: 0;
   padding: 0;
   writing-mode: vertical-rl;
-  text-orientation: upright;
-  position: absolute;
-  left: -0.7em; /* より近い位置に調整 */
-  top: 0;
-  width: 0.6em;
+  text-orientation: mixed;
+  color: #d1d5db;
+  font-weight: 300;
+  letter-spacing: 0 !important;
+  word-spacing: 0 !important;
   text-align: center;
   white-space: nowrap;
-  letter-spacing: 0 !important;
 }
 
 /* レスポンシブ調整 */

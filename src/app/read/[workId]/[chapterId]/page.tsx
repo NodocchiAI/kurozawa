@@ -90,7 +90,7 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
                 const paragraphs = cleanContent
                   .split('\n\n')
                   .filter(p => p.trim().length > 0)
-                  .map(p => p.replace(/\n/g, ' ').trim()); // 改行をスペースに変換
+                  .map(p => p.replace(/\n/g, '').trim()); // 改行を除去
                 
                 const midPoint = Math.ceil(paragraphs.length / 2);
                 const firstHalf = paragraphs.slice(0, midPoint);

@@ -163,12 +163,15 @@ body {
   line-break: strict;
   word-break: keep-all;
   overflow-wrap: break-word;
-  white-space: pre-wrap;
+  white-space: pre-line; /* pre-wrapから変更 */
   /* 縦書き特有の調整 */
   text-combine-upright: none;
   font-feature-settings: "vkrn" 1, "vpal" 1, "vchw" 1;
   /* 文字間隔を細かく制御 */
   font-variant-east-asian: proportional-width;
+  /* 空白の処理を改善 */
+  word-spacing: 0;
+  tab-size: 0;
 }
 
 .vertical-text {
@@ -201,6 +204,32 @@ body {
 /* ページめくりアニメーション */
 .page-transition {
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ルビ（ふりがな）スタイル */
+.ruby {
+  ruby-position: over;
+  ruby-align: center;
+}
+
+.ruby rt {
+  font-size: 0.5em;
+  color: #d1d5db;
+  font-weight: 300;
+  text-orientation: upright;
+  writing-mode: horizontal-tb;
+}
+
+/* 縦書きでのルビ調整 */
+.reader-text .ruby {
+  ruby-position: inter-character;
+}
+
+.reader-text .ruby rt {
+  font-size: 0.6em;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
 }
 
 /* レスポンシブ調整 */

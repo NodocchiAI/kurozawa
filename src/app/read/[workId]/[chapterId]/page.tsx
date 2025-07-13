@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getWork, getAuthor, getChapter, getChapters } from '@/utils/content';
 import VerticalReader from '@/components/reader/VerticalReader';
+import { parseTextWithRuby } from '@/utils/rubyParser';
 
 export function generateStaticParams() {
   const chapters = getChapters();
@@ -85,20 +86,26 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
                 const firstHalf = paragraphs.slice(0, midPoint).join('\n\n');
                 const secondHalf = paragraphs.slice(midPoint).join('\n\n');
                 
+                // ルビパーサーを適用
+                const firstHalfWithRuby = parseTextWithRuby(firstHalf);
+                const secondHalfWithRuby = parseTextWithRuby(secondHalf);
+                
                 return (
                   <>
                     {/* 右側コラム（最初に表示） */}
                     <div className="reader-column">
-                      <div className="reader-text">
-                        {firstHalf}
-                      </div>
+                      <div 
+                        className="reader-text"
+                        dangerouslySetInnerHTML={{ __html: firstHalfWithRuby }}
+                      />
                     </div>
                     
                     {/* 左側コラム */}
                     <div className="reader-column">
-                      <div className="reader-text">
-                        {secondHalf}
-                      </div>
+                      <div 
+                        className="reader-text"
+                        dangerouslySetInnerHTML={{ __html: secondHalfWithRuby }}
+                      />
                     </div>
                   </>
                 );

@@ -92,9 +92,23 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
                   .filter(p => p.trim().length > 0)
                   .map(p => p.replace(/\n/g, '').trim()); // 改行を除去
                 
-                const midPoint = Math.ceil(paragraphs.length / 2);
-                const firstHalf = paragraphs.slice(0, midPoint);
-                const secondHalf = paragraphs.slice(midPoint);
+                // 文字数ベースで分割（えあ草紙風）
+                const totalChars = paragraphs.reduce((sum, p) => sum + p.length, 0);
+                const targetChars = Math.floor(totalChars / 2);
+                
+                let currentChars = 0;
+                let splitIndex = 0;
+                
+                for (let i = 0; i < paragraphs.length; i++) {
+                  currentChars += paragraphs[i].length;
+                  if (currentChars >= targetChars) {
+                    splitIndex = i + 1;
+                    break;
+                  }
+                }
+                
+                const firstHalf = paragraphs.slice(0, splitIndex);
+                const secondHalf = paragraphs.slice(splitIndex);
                 
                 return (
                   <>

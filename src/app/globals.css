@@ -175,7 +175,7 @@ body {
 }
 
 .reader-paragraph {
-  margin: 0 1em 0 0; /* 縦書きでは右マージンで段落間隔を制御 */
+  margin: 0 0.8em 0 0; /* 縦書きでは右マージンで段落間隔を制御 */
   padding: 0;
   line-height: inherit;
   letter-spacing: 0 !important;

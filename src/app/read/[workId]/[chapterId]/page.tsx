@@ -81,31 +81,42 @@ export default async function ReaderPage({ params }: ReaderPageProps) {
           <div className="reader-main">
             <div className="reader-content-wrapper">
               {(() => {
-                const paragraphs = chapter.content.split('\n\n');
-                const midPoint = Math.ceil(paragraphs.length / 2);
-                const firstHalf = paragraphs.slice(0, midPoint).join('\n\n');
-                const secondHalf = paragraphs.slice(midPoint).join('\n\n');
+                // 段落を適切に分割（空行を除去）
+                const paragraphs = chapter.content
+                  .split('\n\n')
+                  .filter(p => p.trim().length > 0)
+                  .map(p => p.replace(/\n/g, ''));
                 
-                // ルビパーサーを適用
-                const firstHalfWithRuby = parseTextWithRuby(firstHalf);
-                const secondHalfWithRuby = parseTextWithRuby(secondHalf);
+                const midPoint = Math.ceil(paragraphs.length / 2);
+                const firstHalf = paragraphs.slice(0, midPoint);
+                const secondHalf = paragraphs.slice(midPoint);
                 
                 return (
                   <>
                     {/* 右側コラム（最初に表示） */}
                     <div className="reader-column">
-                      <div 
-                        className="reader-text"
-                        dangerouslySetInnerHTML={{ __html: firstHalfWithRuby }}
-                      />
+                      <div className="reader-text">
+                        {firstHalf.map((paragraph, index) => (
+                          <p 
+                            key={index} 
+                            className="reader-paragraph"
+                            dangerouslySetInnerHTML={{ __html: parseTextWithRuby(paragraph) }}
+                          />
+                        ))}
+                      </div>
                     </div>
                     
                     {/* 左側コラム */}
                     <div className="reader-column">
-                      <div 
-                        className="reader-text"
-                        dangerouslySetInnerHTML={{ __html: secondHalfWithRuby }}
-                      />
+                      <div className="reader-text">
+                        {secondHalf.map((paragraph, index) => (
+                          <p 
+                            key={index} 
+                            className="reader-paragraph"
+                            dangerouslySetInnerHTML={{ __html: parseTextWithRuby(paragraph) }}
+                          />
+                        ))}
+                      </div>
                     </div>
                   </>
                 );

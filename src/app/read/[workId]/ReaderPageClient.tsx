@@ -14,7 +14,7 @@ interface ReaderPageClientProps {
   workId: string;
 }
 
-export default function ReaderPageClient({ work, author, fullContent, workId }: ReaderPageClientProps) {
+export default function ReaderPageClient({ work, fullContent, workId }: ReaderPageClientProps) {
   const [fontSize, setFontSize] = useState(16);
   
   // フォントサイズの初期化（クライアント側のみ）
@@ -68,7 +68,6 @@ export default function ReaderPageClient({ work, author, fullContent, workId }: 
           <EasoshiReader 
             content={fullContent} 
             fontSize={fontSize}
-            onFontSizeChange={handleFontSizeChange}
           />
         </article>
         </VerticalReader>

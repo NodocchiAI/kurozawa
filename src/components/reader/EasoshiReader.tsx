@@ -10,11 +10,10 @@ interface EasoshiReaderProps {
   onFontSizeChange?: (size: number) => void;
 }
 
-export default function EasoshiReader({ content, fontSize: externalFontSize, onFontSizeChange }: EasoshiReaderProps) {
+export default function EasoshiReader({ content, fontSize: externalFontSize }: EasoshiReaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 1200, height: 800 });
   const [fontSize, setFontSize] = useState(externalFontSize || 16);
-  const [isClient, setIsClient] = useState(false);
 
   // 外部からのフォントサイズ変更を反映
   useEffect(() => {
@@ -23,9 +22,8 @@ export default function EasoshiReader({ content, fontSize: externalFontSize, onF
     }
   }, [externalFontSize]);
 
-  // クライアント側でのみ実行
+  // クライアント側でのローカル保存フォントサイズ読み込み
   useEffect(() => {
-    setIsClient(true);
     if (!externalFontSize) {
       const saved = localStorage.getItem('kurozora-font-size');
       if (saved) {

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import FontSizeControl from './FontSizeControl';
 
 interface ReaderMenuProps {
   fontSize: number;

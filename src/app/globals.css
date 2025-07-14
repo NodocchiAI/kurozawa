@@ -182,8 +182,8 @@ body {
 
 .reader-text {
   font-family: 'Noto Serif JP', serif;
-  font-size: 1.05rem !important;
-  line-height: 1.6 !important;
+  /* font-size: inherit; フォントサイズは親要素から継承 */
+  line-height: 1.6;
   letter-spacing: 0 !important;
   color: #f3f4f6;
   font-weight: 400;
@@ -195,9 +195,9 @@ body {
   /* 句読点の禁則処理 */
   hanging-punctuation: none;
   line-break: strict;
-  word-break: keep-all;
+  word-break: break-all; /* 文字数制限を尊重 */
   overflow-wrap: break-word;
-  white-space: normal;
+  white-space: pre-line; /* 改行を保持 */
   /* 縦書き特有の調整 */
   text-combine-upright: none;
   font-feature-settings: "vkrn" 1, "vpal" 1;
@@ -316,7 +316,27 @@ body {
   }
   
   .reader-text {
-    font-size: 1rem;
+    /* font-size: inherit; フォントサイズは親要素から継承 */
     line-height: 2;
   }
+}
+
+/* フォントサイズスライダーのカスタムスタイル */
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  border: 2px solid #333;
+}
+
+.slider::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  border: 2px solid #333;
 }

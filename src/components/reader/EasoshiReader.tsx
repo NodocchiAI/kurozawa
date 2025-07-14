@@ -2,18 +2,40 @@
 
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { parseTextWithRuby } from '@/utils/rubyParser';
-import { calculateOptimalSplit, calculateOptimalFontSize } from '@/utils/textMeasurement';
+import { calculateOptimalSplit, calculateCharactersPerLine } from '@/utils/textMeasurement';
 
 interface EasoshiReaderProps {
   content: string;
+  fontSize?: number;
+  onFontSizeChange?: (size: number) => void;
 }
 
-export default function EasoshiReader({ content }: EasoshiReaderProps) {
+export default function EasoshiReader({ content, fontSize: externalFontSize, onFontSizeChange }: EasoshiReaderProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 1200, height: 800 });
-  const [fontSize, setFontSize] = useState(16);
+  const [fontSize, setFontSize] = useState(externalFontSize || 16);
+  const [isClient, setIsClient] = useState(false);
+
+  // 外部からのフォントサイズ変更を反映
+  useEffect(() => {
+    if (externalFontSize !== undefined) {
+      setFontSize(externalFontSize);
+    }
+  }, [externalFontSize]);
+
+  // クライアント側でのみ実行
+  useEffect(() => {
+    setIsClient(true);
+    if (!externalFontSize) {
+      const saved = localStorage.getItem('kurozora-font-size');
+      if (saved) {
+        setFontSize(parseInt(saved));
+      }
+    }
+  }, [externalFontSize]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+
 
   useEffect(() => {
     const updateSize = () => {
@@ -60,27 +82,27 @@ export default function EasoshiReader({ content }: EasoshiReaderProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [nextPage, prevPage]);
 
-  useEffect(() => {
-    // コンテンツに基づいて最適なフォントサイズを計算
-    const optimalSize = calculateOptimalFontSize(
-      content,
-      containerSize.width,
-      containerSize.height,
-      17 // ベースフォントサイズ
-    );
-    setFontSize(optimalSize);
-  }, [content, containerSize]);
+  // 自動フォントサイズ調整を無効化（手動調整を優先）
+  // useEffect(() => {
+  //   const optimalSize = calculateOptimalFontSize(
+  //     content,
+  //     containerSize.width,
+  //     containerSize.height,
+  //     17
+  //   );
+  //   setFontSize(optimalSize);
+  // }, [content, containerSize]);
 
   // テキストを適切に処理
   const cleanContent = content
     .replace(/^#.*$/gm, '') // 見出しを除去
     .trim();
   
-  // 段落を適切に分割
+  // 段落を適切に分割（MDファイル上の改行を尊重）
   const paragraphs = cleanContent
     .split('\n\n')
     .filter(p => p.trim().length > 0)
-    .map(p => p.replace(/\n/g, '').trim());
+    .map(p => p.trim()); // 改行は除去せずそのまま保持
 
   // 全体をページ分割
   const pagesData = useMemo(() => {
@@ -114,6 +136,9 @@ export default function EasoshiReader({ content }: EasoshiReaderProps) {
 
   // 現在のページデータ
   const currentPageData = pagesData[currentPage] || { firstHalf: [], secondHalf: [] };
+
+  console.log('現在のフォントサイズ:', fontSize); // デバッグ
+  console.log('適用するCSSスタイル:', `${fontSize}px`); // デバッグ
 
   return (
     <div 
@@ -158,9 +183,11 @@ export default function EasoshiReader({ content }: EasoshiReaderProps) {
         {currentPage + 1} / {totalPages}
       </div>
       
+      
       {/* ナビゲーションヒント */}
-      <div className="absolute top-4 right-4 text-gray-500 text-xs">
-        ← → キーまたはクリックでページ移動
+      <div className="absolute bottom-4 right-4 text-gray-500 text-xs">
+        ← → キーまたはクリックでページ移動<br/>
+        文字数/行: {calculateCharactersPerLine(fontSize)}
       </div>
     </div>
   );

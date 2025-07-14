@@ -36,17 +36,24 @@ export function calculateOptimalColumnWidth(
   return Math.min(optimalWidth, maxColumnWidth);
 }
 
-// えあ草紙風の精密な文字ベース分割
+// フォントサイズに基づく動的文字数制限計算
+export function calculateCharactersPerLine(fontSize: number): number {
+  // フォントサイズに応じた文字数制限（基準：16px=55文字）
+  const baseSize = 16;
+  const baseChars = 55;
+  return Math.floor(baseChars * (baseSize / fontSize));
+}
+
+// シンプルな文字数制限＋MD改行尊重のロジック
 export function calculateOptimalSplit(
   paragraphs: string[],
   fontSize: number,
-  containerWidth: number,
+  _containerWidth: number,
   containerHeight: number
 ): { firstHalf: string[], secondHalf: string[], processedCount: number } {
   const lineHeight = fontSize * 1.6;
-  const maxLinesPerColumn = Math.floor((containerHeight - fontSize * 4) / lineHeight); // より厳密なマージン
-  const columnWidth = (containerWidth - fontSize * 2) / 2; // カラム間のスペースを考慮
-  const charactersPerLine = Math.floor(columnWidth / (fontSize * 0.6)); // 1文字あたりの幅を調整
+  const maxLinesPerColumn = Math.floor((containerHeight - fontSize * 4) / lineHeight) + 3; // 3行追加
+  const charactersPerLine = calculateCharactersPerLine(fontSize); // 動的文字数制限
   
   const firstColumnContent: string[] = [];
   const secondColumnContent: string[] = [];
@@ -54,37 +61,38 @@ export function calculateOptimalSplit(
   let secondColumnLines = 0;
   let processedParagraphs = 0;
   
-  // 段落を文字単位で処理
   for (let i = 0; i < paragraphs.length; i++) {
     const paragraph = paragraphs[i];
-    const paragraphLines = Math.ceil(paragraph.length / charactersPerLine);
+    
+    // MD改行を尊重した行分割
+    const mdLines = paragraph.split('\n').filter(line => line.trim().length > 0);
+    const processedLines: string[] = [];
+    
+    // 各MD行を文字数制限で分割
+    for (const mdLine of mdLines) {
+      if (mdLine.length <= charactersPerLine) {
+        processedLines.push(mdLine);
+      } else {
+        // 文字数制限を超える場合は分割
+        for (let j = 0; j < mdLine.length; j += charactersPerLine) {
+          processedLines.push(mdLine.slice(j, j + charactersPerLine));
+        }
+      }
+    }
+    
+    const paragraphLineCount = processedLines.length + 1; // 段落間スペース
     
     // 第1カラムに収まるかチェック
-    if (firstColumnLines + paragraphLines <= maxLinesPerColumn) {
-      firstColumnContent.push(paragraph);
-      firstColumnLines += paragraphLines + 1; // 段落間スペース
-      processedParagraphs = i + 1;
-    } 
-    // 第2カラムに収まるかチェック
-    else if (secondColumnLines + paragraphLines <= maxLinesPerColumn) {
-      secondColumnContent.push(paragraph);
-      secondColumnLines += paragraphLines + 1;
+    if (firstColumnLines + paragraphLineCount <= maxLinesPerColumn) {
+      firstColumnContent.push(processedLines.join('\n'));
+      firstColumnLines += paragraphLineCount;
       processedParagraphs = i + 1;
     }
-    // どちらにも収まらない場合は、段落を分割
-    else if (firstColumnContent.length === 0 && secondColumnContent.length === 0) {
-      // 長い段落を強制的に分割
-      const availableLines = maxLinesPerColumn;
-      const maxChars = availableLines * charactersPerLine;
-      if (paragraph.length > maxChars) {
-        firstColumnContent.push(paragraph.substring(0, maxChars));
-        processedParagraphs = i; // 部分的に処理
-        break;
-      } else {
-        firstColumnContent.push(paragraph);
-        processedParagraphs = i + 1;
-      }
-      break;
+    // 第2カラムに収まるかチェック
+    else if (secondColumnLines + paragraphLineCount <= maxLinesPerColumn) {
+      secondColumnContent.push(processedLines.join('\n'));
+      secondColumnLines += paragraphLineCount;
+      processedParagraphs = i + 1;
     }
     // これ以上入らない場合は終了
     else {
